@@ -7,6 +7,7 @@ ENV HADOOP_VERSION=3.3.6
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ENV HADOOP_HOME=/usr/local/hadoop
 ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+
 ENV PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
 
 ENV HDFS_NAMENODE_USER=hadoop
@@ -25,12 +26,11 @@ RUN wget https://downloads.apache.org/hadoop/common/hadoop-${HADOOP_VERSION}/had
 
 RUN groupadd -r hadoop && \
     useradd -r -g hadoop -s /bin/bash hadoop && \
-    chown -R hadoop:hadoop $HADOOP_HOME
+    chown -R hadoop:hadoop $HADOOP_HOME && \
+    chmod -R 755 $HADOOP_HOME
 
 COPY core-site.xml $HADOOP_HOME/etc/hadoop/core-site.xml
 COPY hdfs-site.xml $HADOOP_HOME/etc/hadoop/hdfs-site.xml
-COPY script.py /
-
 
 RUN echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
 
@@ -44,6 +44,9 @@ RUN mkdir -p /usr/local/hadoop/dfs/data && \
     chown -R hadoop:hadoop /usr/local/hadoop/dfs
 
 RUN pip3 install hdfs
+
+RUN echo "export PATH=\$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin" >> /home/hadoop/.bashrc && \
+    echo "export JAVA_HOME=$JAVA_HOME" >> /home/hadoop/.bashrc
 
 USER root
 
