@@ -13,8 +13,9 @@ fi
 
 echo "Starting Docker container..."
 docker run -d --name $CONTAINER_NAME \
-    -p 9870:9870 \
+    -p 9870:9870 -p 9000:9000 -p 50070:50070 -p 9864:9864 -p 9866:9866\
     -v ./scripts:/scripts \
+    --hostname localhost \
     $IMAGE_NAME
 
 if [ $? -ne 0 ]; then

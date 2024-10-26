@@ -2,7 +2,6 @@ FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
-
 ENV HADOOP_VERSION=3.3.6
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ENV HADOOP_HOME=/usr/local/hadoop
@@ -16,8 +15,7 @@ ENV YARN_RESOURCEMANAGER_USER=hadoop
 ENV YARN_NODEMANAGER_USER=hadoop
 
 RUN apt-get update && \
-    apt-get install -y curl openjdk-11-jdk wget python3 python3-pip ssh tzdata nano && \
-    apt-get clean
+    apt-get install -y curl openjdk-11-jdk wget python3 python3-pip ssh tzdata nano 
 
 RUN wget https://downloads.apache.org/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz && \
     tar -xzvf hadoop-${HADOOP_VERSION}.tar.gz && \
@@ -50,7 +48,7 @@ RUN echo "export PATH=\$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin" >> /home/hadoop
 
 USER root
 
-EXPOSE 9870 9000
+EXPOSE 9870 9000 50070 9864 9866
 
 CMD service ssh start && \
     $HADOOP_HOME/bin/hdfs namenode -format -force && \
