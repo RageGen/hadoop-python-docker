@@ -48,6 +48,13 @@ RUN echo "export PATH=\$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin" >> /home/hadoop
 
 USER root
 
+ENV PIG_VERSION=0.17.0
+RUN wget https://downloads.apache.org/pig/pig-${PIG_VERSION}/pig-${PIG_VERSION}.tar.gz && \
+    tar -xzvf pig-${PIG_VERSION}.tar.gz && \
+    mv pig-${PIG_VERSION} /usr/local/pig && \
+    rm pig-${PIG_VERSION}.tar.gz
+ENV PATH=$PATH:/usr/local/pig/bin
+
 EXPOSE 9870 9000 50070 9864 9866
 
 CMD service ssh start && \
