@@ -46,8 +46,6 @@ RUN pip3 install hdfs
 RUN echo "export PATH=\$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin" >> /home/hadoop/.bashrc && \
     echo "export JAVA_HOME=$JAVA_HOME" >> /home/hadoop/.bashrc
 
-USER root
-
 ENV PIG_VERSION=0.17.0
 RUN wget https://downloads.apache.org/pig/pig-${PIG_VERSION}/pig-${PIG_VERSION}.tar.gz && \
     tar -xzvf pig-${PIG_VERSION}.tar.gz && \
@@ -55,7 +53,18 @@ RUN wget https://downloads.apache.org/pig/pig-${PIG_VERSION}/pig-${PIG_VERSION}.
     rm pig-${PIG_VERSION}.tar.gz
 ENV PATH=$PATH:/usr/local/pig/bin
 
-EXPOSE 9870 9000 50070 9864 9866
+ENV SPARK_VERSION=3.4.1
+ENV SPARK_HOME=/usr/local/spark
+
+RUN wget https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz && \
+    tar -xzvf spark-${SPARK_VERSION}-bin-hadoop3.tgz && \
+    mv spark-${SPARK_VERSION}-bin-hadoop3 ${SPARK_HOME} && \
+    rm spark-${SPARK_VERSION}-bin-hadoop3.tgz
+RUN echo "export SPARK_HOME=$SPARK_HOME" >> /home/hadoop/.bashrc && \
+    echo "export PATH=\$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin" >> /home/hadoop/.bashrc && \
+    echo "export HADOOP_CONF_DIR=$HADOOP_CONF_DIR" >> /home/hadoop/.bashrc 
+ENV PATH=$PATH:/usr/local/spark/bin
+EXPOSE 9870 9000 50070 9864 9866 8080 7077 4040
 
 CMD service ssh start && \
     $HADOOP_HOME/bin/hdfs namenode -format -force && \
@@ -64,4 +73,5 @@ CMD service ssh start && \
     $HADOOP_HOME/bin/hdfs datanode & \
     sleep 5 && \
     start-yarn.sh && \
-    tail -f $HADOOP_HOME/logs/*.log
+    $SPARK_HOME/sbin/start-all.sh && \
+    tail -f $HADOOP_HOME/logs/*.log $SPARK_HOME/logs/*.log
