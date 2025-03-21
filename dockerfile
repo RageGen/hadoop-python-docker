@@ -41,7 +41,7 @@ RUN mkdir -p /home/hadoop/.ssh && \
 RUN mkdir -p /usr/local/hadoop/dfs/data && \
     chown -R hadoop:hadoop /usr/local/hadoop/dfs
 
-RUN pip3 install hdfs
+RUN pip3 install hdfs pyspark
 
 RUN echo "export PATH=\$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin" >> /home/hadoop/.bashrc && \
     echo "export JAVA_HOME=$JAVA_HOME" >> /home/hadoop/.bashrc
